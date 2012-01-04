@@ -1,0 +1,13 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="collective.powertoken.core">
+
+  <browser:page
+    for="Products.CMFPlone.interfaces.siteroot.IPloneSiteRoot"
+    name="consume-powertoken"
+    class=".consume_token.ConsumePowerTokenView"
+    permission="zope.Public"
+  />
+
+</configure>
