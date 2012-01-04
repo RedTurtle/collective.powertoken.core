@@ -5,7 +5,8 @@ version = '0.1.0'
 
 setup(name='collective.powertoken.core',
       version=version,
-      description="A mechanism for bypass Plone security, accessing specific URLs while giving a secret token (core package)",
+      description="A mechanism for bypass Plone security, accessing specific "
+                  "URLs while giving a secret token (core package)",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from
@@ -20,7 +21,7 @@ setup(name='collective.powertoken.core',
       keywords='plone security token plonegov',
       author='RedTurtle Technology',
       author_email='sviluppoplone@redturtle.it',
-      url='http://svn.plone.org/svn/collective/collective.powertoken.core',
+      url='http://plone.org/collective.powertoken.core',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['collective', 'collective.powertoken'],
