@@ -36,4 +36,8 @@ class ConsumePowerTokenView(BrowserView):
         
         return portal.unrestrictedTraverse(path)
 
-        
+class ConsumeFirstPowerTokenView(ConsumePowerTokenView):
+    """Return only the first result from all executed token"""
+    
+    def __call__(self, *args, **kw):
+        return ConsumePowerTokenView.__call__(self, *args, **kw)[0]

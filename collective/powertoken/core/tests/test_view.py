@@ -61,8 +61,31 @@ class TestTokenView(TestCase):
         self.assertEqual(view._getTarget('/testdoc').absolute_url_path(), '/plone/testdoc')
 
 
+class TestFirstTokenView(TestCase):
+
+    def afterSetUp(self):
+        self.setRoles(('Manager', ))
+        portal = self.portal
+        portal.invokeFactory(type_name="Document", id="testdoc")
+        doc = portal.testdoc
+        doc.edit(title="A test document")
+        self.utility = getUtility(IPowerTokenUtility)
+        self.doc = portal.testdoc
+        self.request = self.portal.REQUEST
+        self.logout()
+        self.setRoles(('Anonymous', ))
+
+    def test_firstPowerActionCall(self):
+        token = self.utility.enablePowerToken(self.doc, 'foo')
+        self.request.form['token'] = token
+        self.request.form['path'] = 'testdoc'
+        view = getMultiAdapter((self.portal, self.request), name='consume-powertoken-first')
+        self.assertEqual(view(),  ('http://nohost/plone/testdoc', 'foo', {}))
+
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestTokenView))
+    suite.addTest(makeSuite(TestFirstTokenView))
     return suite

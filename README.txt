@@ -85,5 +85,6 @@ object:
     You can configure an action that never expire the token when executed, so you can call it many times
     as you want (using the same token every time).
 ``params``
-    Every other keyword argument passed, commonly used by adapters.
+    Default is an ampty dict, automatically filled with every other keyword argument passed,
+    commonly used by adapters.
 
