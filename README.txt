@@ -6,7 +6,7 @@ Introduction
 A product for Plone developers. You will be able to register actions on site's contents, protected
 by a *secret token*.
 
-Using an internal utility, or calling a provided view (``consume-powertoken``) raise the action you
+Using an internal utility, or calling a provided view (``consume-powertoken``) you can run the action you
 have configured previously.
 
 How to use
@@ -32,6 +32,19 @@ Or calling the provided view that need ``token`` and ``path`` parameters, for ex
 
     http://myplonesite/@@consume-powertoken?token=aaaa-bbbb-cccc&path=path/to/the/content
 
+Registering more that one action
+--------------------------------
+
+You can also register (and then run all of theme) more that one action for a token.
+
+>>> token = utility.enablePowerToken(document, 'myMagicAction')
+>>> utility.addAction(document, token, 'myMagicAction')
+>>> utility.addAction(document, token, 'aDifferentAction')
+
+When you consume the token, all registered actions are executed in order.
+
+>>> result = utility.consumeAction(document, token)
+
 What action is executed?
 ------------------------
 
@@ -43,7 +56,7 @@ When you call:
 >>> token = utility.enablePowerToken(document, 'myMagicAction', parameter1='foo', parameter2=5)
 
 ... you are preparing the call for an adapter called *myMagicAction*, saving also additional
-parameter provided (in a special ``action`` object, see below)(3rd party adapter can require
+parameter provided (in a special ``action`` object, see below) (3rd party adapter can require
 specific parameters to works).
 
 When ``consumeAction`` is called, internally a new adapter is called:
@@ -54,13 +67,14 @@ When ``consumeAction`` is called, internally a new adapter is called:
 ...                           name='myMagicAction')
 >>> result = adapter.doAction(action)
 
-That to do with results (you can also don't provide results) is under your control
+What to do with results (you can also don't provide results) is under your control. Result is always a
+Python list with all results from all executed actions. 
 
 Special parameters
 ------------------
 
 When calling ``enablePowerToken`` and you give additional parameters, they are stored in the ``action``
-object all but:
+object:
 
 ``roles``
     Default to empty list. Commonly when you call ``consumeAction`` you are performing an action keeping your
@@ -70,4 +84,6 @@ object all but:
     Default to True. When you call ``consumeAction``  you commonly execute the action and delete the token.
     You can configure an action that never expire the token when executed, so you can call it many times
     as you want (using the same token every time).
+``params``
+    Every other keyword argument passed, commonly used by adapters.
 

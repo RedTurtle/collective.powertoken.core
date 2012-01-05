@@ -9,13 +9,20 @@ class IPowerTokenizedContent(Interface):
 class IPowerTokenUtility(Interface):
     """Interface for the Power Token utility"""
     
-    def enablePowerToken(content, type, roles=[], **kwargs):
+    def enablePowerToken(content, type, roles=[], oneTime=True, **kwargs):
         """
         Enable a Power Token on the content, registering an action type.
         
         Additional keyword arguments provided are stored in the action.
         
-        Obtain the new token in.
+        Return the generated token.
+        """
+
+    def addAction(content, token, type, roles=[], oneTime=True, **kwargs):
+        """
+        Add another action to an existing Power Token enabled content
+        
+        Returns the new action IPowerActionConfiguration object
         """
 
     def disablePowerTokens(self, content):
@@ -38,11 +45,11 @@ class IPowerTokenUtility(Interface):
         Return the action deleted
         """
     
-    def consumeAction(content, token):
+    def consumeActions(content, token):
         """
         Execute what to do on the content for a given token
         
-        Returns the results of the action, if any
+        Returns the list of results of all actions in order (if any)
         """
 
 

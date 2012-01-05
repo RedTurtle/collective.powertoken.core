@@ -22,7 +22,7 @@ class ConsumePowerTokenView(BrowserView):
         target = self._getTarget(path)
         
         utility = getUtility(IPowerTokenUtility)
-        return utility.consumeAction(target, token)
+        return utility.consumeActions(target, token)
         
     def _getTarget(self, path):
         """

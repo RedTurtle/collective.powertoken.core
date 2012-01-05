@@ -12,3 +12,11 @@ class TokenActionConfiguration(Persistent):
         self.roles = roles
         self.oneTime = oneTime
         self.params = kwargs
+
+    def __repr__(self):
+        return "<TokenActionConfiguration type='%s', roles=%s, oneTime=%s, params=%s>" % (
+                    self.type,
+                    self.roles,
+                    self.oneTime,
+                    self.params
+                    )

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import uuid
+
+from persistent.list import PersistentList
+from persistent.dict import PersistentDict
+
 from zope.interface import implements, alsoProvides, noLongerProvides
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
 from zope.component.interfaces import ComponentLookupError
-from persistent.dict import PersistentDict
-import uuid
 
 from collective.powertoken.core.interfaces import IPowerTokenUtility, IPowerTokenizedContent
 from collective.powertoken.core.interfaces import IPowerActionProvider
@@ -27,7 +30,7 @@ class PowerTokenUtility(object):
     def _generateNewToken(self):
         return str(uuid.uuid4())
 
-    def enablePowerToken(self, content, type, roles=[], **kwargs):
+    def enablePowerToken(self, content, type, roles=[], oneTime=True, **kwargs):
         annotations = IAnnotations(content)
         
         if not annotations.get(config.MAIN_TOKEN_NAME):
@@ -42,9 +45,18 @@ class PowerTokenUtility(object):
             raise KeyError('Token %s already stored in object %s' % (token,
                                                                      '/'.join(content.getPhysicalPath())))
         
-        powertokens[token] = TokenActionConfiguration(type, roles=roles, **kwargs)
-        
+        powertokens[token] = PersistentList()
+        self.addAction(content, token, type, roles=roles, oneTime=oneTime, **kwargs)
         return token
+
+    def addAction(self, content, token, type, roles=[], oneTime=True, **kwargs):
+        self.verifyToken(content, token, True)
+        annotations = IAnnotations(content)
+        powertokens = annotations[config.MAIN_TOKEN_NAME]
+        actions = powertokens[token]
+        action = TokenActionConfiguration(type, roles=roles, oneTime=oneTime, **kwargs)
+        actions.append(action)
+        return action
 
     def verifyToken(self, content, token, raiseOnError=True):
         if not IPowerTokenizedContent.providedBy(content):
@@ -71,12 +83,16 @@ class PowerTokenUtility(object):
         self.verifyToken(content, token, True)
         annotations = IAnnotations(content)
         powertokens = annotations[config.MAIN_TOKEN_NAME]
-        action = powertokens[token]
-        if action.oneTime:
-            del powertokens[token]
-        if len(powertokens)==0:
-            self.disablePowerTokens(content)
-        return action
+        results = []
+        for action in powertokens[token][:]:
+            if action.oneTime:
+                powertokens[token].remove(action)
+            if len(powertokens[token])==0:
+                del powertokens[token]
+            if len(powertokens)==0:
+                self.disablePowerTokens(content)
+            results.append(action)
+        return results
 
     def removeToken(self, content, token):
         self.verifyToken(content, token, True)
@@ -86,25 +102,28 @@ class PowerTokenUtility(object):
         if len(powertokens)==0:
             self.disablePowerTokens(content)
 
-    def consumeAction(self, content, token):
+    def consumeActions(self, content, token):
         self.verifyToken(content, token)
-        action = self.consumeToken(content, token)
-        action_type = action.type
-        
-        try:
-            adapter = getMultiAdapter((content, content.REQUEST), IPowerActionProvider, name=action_type)
-        except ComponentLookupError:
-            raise ComponentLookupError('Cannot find a provider for performing action "%s" on %s' % (action_type,
-                                                                                                    '/'.join(content.getPhysicalPath())))
-        try:
-            if action.roles:
-                acl_users = getToolByName(content, 'acl_users')
-                old_sm = getSecurityManager()
-                tmp_user = SimpleUser(old_sm.getUser().getId(), '', action.roles, '')
-                tmp_user = tmp_user.__of__(acl_users)
-                newSecurityManager(None, tmp_user)
-            return adapter.doAction(action)
-        finally:
-            if action.roles:
-                setSecurityManager(old_sm)
+        actions = self.consumeToken(content, token)
+        results = []
 
+        for action in actions:
+            action_type = action.type
+            
+            try:
+                adapter = getMultiAdapter((content, content.REQUEST), IPowerActionProvider, name=action_type)
+            except ComponentLookupError:
+                raise ComponentLookupError('Cannot find a provider for performing action "%s" on %s' % (action_type,
+                                                                                                        '/'.join(content.getPhysicalPath())))
+            try:
+                if action.roles:
+                    acl_users = getToolByName(content, 'acl_users')
+                    old_sm = getSecurityManager()
+                    tmp_user = SimpleUser(old_sm.getUser().getId(), '', action.roles, '')
+                    tmp_user = tmp_user.__of__(acl_users)
+                    newSecurityManager(None, tmp_user)
+                results.append(adapter.doAction(action))
+            finally:
+                if action.roles:
+                    setSecurityManager(old_sm)
+        return results
