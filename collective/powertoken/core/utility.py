@@ -119,7 +119,7 @@ class PowerTokenUtility(object):
                 if action.roles:
                     acl_users = getToolByName(content, 'acl_users')
                     old_sm = getSecurityManager()
-                    tmp_user = SimpleUser(old_sm.getUser().getId(), '', action.roles, '')
+                    tmp_user = SimpleUser(old_sm.getUser().getId() or ' ', '', action.roles, '')
                     tmp_user = tmp_user.__of__(acl_users)
                     newSecurityManager(None, tmp_user)
                 results.append(adapter.doAction(action))

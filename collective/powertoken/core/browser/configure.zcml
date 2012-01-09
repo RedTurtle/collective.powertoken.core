@@ -8,13 +8,13 @@
     name="consume-powertoken"
     class=".consume_token.ConsumePowerTokenView"
     permission="zope.Public"
-  />
+    />
 
   <browser:page
     for="Products.CMFPlone.interfaces.siteroot.IPloneSiteRoot"
     name="consume-powertoken-first"
     class=".consume_token.ConsumeFirstPowerTokenView"
     permission="zope.Public"
-  />
+    />
 
 </configure>

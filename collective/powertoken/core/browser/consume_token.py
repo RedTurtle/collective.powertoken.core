@@ -28,13 +28,11 @@ class ConsumePowerTokenView(BrowserView):
         """
         Path must be always "folder/foo" or "/folder/foo", not including portal object id
         """
-        
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        
         if path.startswith('/'):
             path = path[1:]
-        
         return portal.unrestrictedTraverse(path)
+
 
 class ConsumeFirstPowerTokenView(ConsumePowerTokenView):
     """Return only the first result from all executed token"""
