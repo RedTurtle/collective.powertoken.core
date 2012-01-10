@@ -1,13 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from zope.component import getUtility, getMultiAdapter
-from zope.annotation.interfaces import IAnnotations
-
-from zope.component import provideAdapter
-from zope.component import getGlobalSiteManager
-
-from zope.publisher.interfaces.browser import IHTTPRequest
-from Products.CMFCore.interfaces import IContentish
 
 from collective.powertoken.core.tests.base import TestCase
 from collective.powertoken.core.interfaces import IPowerTokenUtility

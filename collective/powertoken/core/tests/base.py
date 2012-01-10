@@ -3,19 +3,17 @@
 from Products.Five import zcml
 from Products.Five import fiveconfigure
 
-from Testing import ZopeTestCase as ztc
+#from Testing import ZopeTestCase as ztc
 
 from Products.PloneTestCase import PloneTestCase as ptc
 from Products.PloneTestCase.layer import onsetup
 
 from zope.interface import implements
 from zope.component import provideAdapter
-from zope.component import getGlobalSiteManager
 from Products.CMFCore.interfaces import IContentish
 
 from zope.publisher.interfaces.browser import IHTTPRequest
 from collective.powertoken.core.interfaces import IPowerActionProvider
-from collective.powertoken.core.interfaces import IPowerTokenUtility, IPowerTokenizedContent
 
 @onsetup
 def setup_product():

@@ -3,17 +3,10 @@
 from zope.component import getUtility, ComponentLookupError
 from zope.annotation.interfaces import IAnnotations
 
-from zope.component import provideAdapter
-from zope.component import getGlobalSiteManager
-
-from zope.publisher.interfaces.browser import IHTTPRequest
-from Products.CMFCore.interfaces import IContentish
-
 from collective.powertoken.core import config
 from collective.powertoken.core.exceptions import PowerTokenSecurityError, PowerTokenConfigurationError
 from collective.powertoken.core.interfaces import IPowerTokenUtility, IPowerTokenizedContent 
-from collective.powertoken.core.interfaces import IPowerActionProvider
-from collective.powertoken.core.tests.base import TestCase, TestPowerActionProvider
+from collective.powertoken.core.tests.base import TestCase
 
 class TestToken(TestCase):
 
