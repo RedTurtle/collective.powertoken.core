@@ -1,0 +1,5 @@
+List of all know Power Token action providers
+=============================================
+
+* collective.powertoken.worfklow - http://pypi.python.org/pypi/collective.powertoken.worfklow
+* collective.powertoken.view - http://pypi.python.org/pypi/collective.powertoken.view

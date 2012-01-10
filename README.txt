@@ -70,6 +70,10 @@ When ``consumeAction`` is called, internally a new adapter is called:
 What to do with results (you can also don't provide results) is under your control. Result is always a
 Python list with all results from all executed actions. 
 
+A `list of all know action providers`__ is available online.
+
+__ https://github.com/RedTurtle/collective.powertoken.core/blob/master/docs/KNOW-ACTION-PROVIDERS.txt
+
 Special parameters
 ------------------
 
