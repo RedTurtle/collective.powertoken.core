@@ -6,7 +6,7 @@ Introduction
 A product for Plone developers. You will be able to register actions on site's contents, protected
 by a *secret token*.
 
-Using an internal utility, or calling a provided view (``consume-powertoken``) you can run the action you
+Using an internal utility, or calling a provided view (``@@consume-powertoken``) you can run the action you
 have configured previously.
 
 How to use
@@ -89,6 +89,13 @@ object:
     You can configure an action that never expire the token when executed, so you can call it many times
     as you want (using the same token every time).
 ``params``
-    Default is an ampty dict, automatically filled with every other keyword argument passed,
+    Default is an empty dict, automatically filled with every other keyword argument passed,
     commonly used by adapters.
+
+Final security note
+===================
+
+This product play with Zope security, potentially giving great power to users, simply knowing the secret token.
+
+**Be careful!**
 
