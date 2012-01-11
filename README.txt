@@ -49,15 +49,15 @@ What action is executed?
 ------------------------
 
 This is only the core package so you need to look for other packages that add possible actions (or develop
-your own)
+your own).
 
 When you call:
 
 >>> token = utility.enablePowerToken(document, 'myMagicAction', parameter1='foo', parameter2=5)
 
 ... you are preparing the call for an adapter called *myMagicAction*, saving also additional
-parameter provided (in a special ``action`` object, see below) (3rd party adapter can require
-specific parameters to works).
+parameter provided (in a special ``action`` object, see below). Know that 3rd party adapter can require
+specific parameters to works.
 
 When ``consumeAction`` is called, internally a new adapter is called:
 
@@ -70,7 +70,8 @@ When ``consumeAction`` is called, internally a new adapter is called:
 What to do with results (you can also don't provide results) is under your control. Result is always a
 Python list with all results from all executed actions. 
 
-A `list of all know action providers`__ is available online.
+A `list of all know action providers`__ is available online (feel free to contribute and update this page
+with your own).
 
 __ https://github.com/RedTurtle/collective.powertoken.core/blob/master/docs/KNOW-ACTION-PROVIDERS.txt
 
@@ -81,13 +82,14 @@ When calling ``enablePowerToken`` and you give additional parameters, they are s
 object:
 
 ``roles``
-    Default to empty list. Commonly when you call ``consumeAction`` you are performing an action keeping your
+    Default to empty list. Commonly when you call ``consumeAction`` you are performing an action keeping user's
     privileges. Providing there a list of Zope roles will give you *those* roles instead. In this way,
     knowing a token, you can commonly perform unauthorized actions.
 ``oneTime``
-    Default to True. When you call ``consumeAction``  you commonly execute the action and delete the token.
-    You can configure an action that never expire the token when executed, so you can call it many times
-    as you want (using the same token every time).
+    Default to True. When you call ``consumeAction``  you commonly execute the action and remove the action
+    from the action list.
+    Instead you can configure an action that never expire the token when executed, so you can call it many
+    times as you want (using the same token every time).
 ``params``
     Default is an empty dict, automatically filled with every other keyword argument passed,
     commonly used by adapters.
@@ -99,3 +101,11 @@ This product play with Zope security, potentially giving great power to users, s
 
 **Be careful!**
 
+Authors
+=======
+
+This product was developed by RedTurtle Technology team.
+
+.. image:: http://www.redturtle.it/redturtle_banner.png
+   :alt: RedTurtle Technology Site
+   :target: http://www.redturtle.it/
