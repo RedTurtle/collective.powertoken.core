@@ -16,10 +16,18 @@ from collective.powertoken.core.tokenaction import TokenActionConfiguration
 from collective.powertoken.core.exceptions import PowerTokenSecurityError, PowerTokenConfigurationError
 from collective.powertoken.core import config
 
-from AccessControl.User import SimpleUser
+from AccessControl.User import SimpleUser, UnrestrictedUser
 from AccessControl.SecurityManagement import newSecurityManager, setSecurityManager, getSecurityManager
 
 from Products.CMFCore.utils import getToolByName
+
+class UnrestrictedUser(UnrestrictedUser):
+    """Unrestricted user that still has an id."""
+
+    def getId(self):
+        """Return the ID of the user."""
+        return self.getUserName()
+
 
 class PowerTokenUtility(object):
     """ Utility for manage power tokens on contents
@@ -30,7 +38,8 @@ class PowerTokenUtility(object):
     def _generateNewToken(self):
         return str(uuid.uuid4())
 
-    def enablePowerToken(self, content, type, roles=[], oneTime=True, **kwargs):
+    def enablePowerToken(self, content, type, roles=[], oneTime=True, unrestricted=False,
+                         username=None, **kwargs):
         annotations = IAnnotations(content)
         
         if not annotations.get(config.MAIN_TOKEN_NAME):
@@ -46,15 +55,18 @@ class PowerTokenUtility(object):
                                                                      '/'.join(content.getPhysicalPath())))
         
         powertokens[token] = PersistentList()
-        self.addAction(content, token, type, roles=roles, oneTime=oneTime, **kwargs)
+        self.addAction(content, token, type, roles=roles, oneTime=oneTime, unrestricted=unrestricted,
+                       username=username, **kwargs)
         return token
 
-    def addAction(self, content, token, type, roles=[], oneTime=True, **kwargs):
+    def addAction(self, content, token, type, roles=[], oneTime=True, unrestricted=False,
+                  username=None, **kwargs):
         self.verifyToken(content, token, True)
         annotations = IAnnotations(content)
         powertokens = annotations[config.MAIN_TOKEN_NAME]
         actions = powertokens[token]
-        action = TokenActionConfiguration(type, roles=roles, oneTime=oneTime, **kwargs)
+        action = TokenActionConfiguration(type, roles=roles, oneTime=oneTime,
+                                          unrestricted=unrestricted, username=username, **kwargs)
         actions.append(action)
         return action
 
@@ -116,10 +128,13 @@ class PowerTokenUtility(object):
                 raise ComponentLookupError('Cannot find a provider for performing action "%s" on %s' % (action_type,
                                                                                                         '/'.join(content.getPhysicalPath())))
             try:
-                if action.roles:
+                if action.roles or action.unrestricted:
                     acl_users = getToolByName(content, 'acl_users')
                     old_sm = getSecurityManager()
-                    tmp_user = SimpleUser(old_sm.getUser().getId() or ' ', '', action.roles, '')
+                    Cls = SimpleUser
+                    if action.unrestricted:
+                        Cls = UnrestrictedUser                        
+                    tmp_user = Cls(action.username or old_sm.getUser().getId() or '', '', action.roles, '')
                     tmp_user = tmp_user.__of__(acl_users)
                     newSecurityManager(None, tmp_user)
                 results.append(adapter.doAction(action))

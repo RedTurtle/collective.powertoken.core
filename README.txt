@@ -94,6 +94,15 @@ object:
     Default is an empty dict, automatically filled with every other keyword argument passed,
     commonly used by adapters.
 
+Additional advanced, parameters:
+
+``unrestricted``
+    Defaut: False. Use an unrestricted user, that always pass security check. Please note that
+    *you commonly don't need this*, just configure well ``roles``.
+``username``
+    Defaut: None. When using a different security context, like when using the ``roles`` parameter, instead
+    of the current user's id (or an empty string when anonymous) you can choose a new one.
+
 Final security note
 ===================
 

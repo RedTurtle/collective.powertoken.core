@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from AccessControl import Unauthorized
+
 from zope.component import getUtility, ComponentLookupError
 from zope.annotation.interfaces import IAnnotations
 
@@ -114,6 +116,33 @@ class TestToken(TestCase):
                          [('http://nohost/plone/testdoc', 'foo', {'abc': 'text'}),
                           ('http://nohost/plone/testdoc', 'foo', {}),])
         self.assertRaises(PowerTokenConfigurationError, self.utility.consumeActions, self.doc, token)
+
+    def test_unrestrictedUser(self):
+        token = self.utility.enablePowerToken(self.doc, 'viewfoo') 
+        has_role, username = self.utility.consumeActions(self.doc, token)[0]
+        self.assertEqual(has_role, 0)
+        self.logout()
+        self.setRoles(('Anonymous', ))
+        token = self.utility.enablePowerToken(self.doc, 'viewfoo', unrestricted=True)
+        has_role, username = self.utility.consumeActions(self.doc, token)[0]
+        self.assertEqual(has_role, 1)
+
+    def test_usernameChange(self):
+        token = self.utility.enablePowerToken(self.doc, 'viewfoo', roles='Member') 
+        has_role, username = self.utility.consumeActions(self.doc, token)[0]
+        self.assertEqual(username, 'test_user_1_')
+        token = self.utility.enablePowerToken(self.doc, 'viewfoo', roles='Member', username='Unknow') 
+        has_role, username = self.utility.consumeActions(self.doc, token)[0]
+        self.assertEqual(username, 'Unknow')
+        self.logout()
+        self.setRoles(('Anonymous', ))
+        token = self.utility.enablePowerToken(self.doc, 'viewfoo', roles='Member') 
+        has_role, username = self.utility.consumeActions(self.doc, token)[0]
+        self.assertEqual(username, '')
+        token = self.utility.enablePowerToken(self.doc, 'viewfoo', roles='Member', username='Unknow') 
+        has_role, username = self.utility.consumeActions(self.doc, token)[0]
+        self.assertEqual(username, 'Unknow')
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

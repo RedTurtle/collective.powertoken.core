@@ -43,6 +43,13 @@ def setup_product():
             provides=IPowerActionProvider,
             name='foo'
         )
+    provideAdapter(
+            AdvancedTestPowerActionProvider,
+            (IContentish,
+             IHTTPRequest),
+            provides=IPowerActionProvider,
+            name='viewfoo'
+        )
 
 # The order here is important: We first call the deferred function and then
 # let PloneTestCase install it during Plone site setup
@@ -61,6 +68,19 @@ class TestPowerActionProvider(object):
     
     def doAction(self, action):
         return self.context.absolute_url(), action.type, action.params
+
+
+class AdvancedTestPowerActionProvider(object):
+    implements(IPowerActionProvider)
+    
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+    
+    def doAction(self, action):
+        member = self.context.portal_membership.getAuthenticatedMember()
+        return (member.has_role('Abc', self.context), member.getId())
+
 
 class TestCase(ptc.PloneTestCase):
     """Base class used for test cases

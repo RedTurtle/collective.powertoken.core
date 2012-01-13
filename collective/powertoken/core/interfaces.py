@@ -9,7 +9,7 @@ class IPowerTokenizedContent(Interface):
 class IPowerTokenUtility(Interface):
     """Interface for the Power Token utility"""
     
-    def enablePowerToken(content, type, roles=[], oneTime=True, **kwargs):
+    def enablePowerToken(content, type, roles=[], oneTime=True, unrestricted=False, username=None, **kwargs):
         """
         Enable a Power Token on the content, registering an action type.
         
@@ -18,7 +18,7 @@ class IPowerTokenUtility(Interface):
         Return the generated token.
         """
 
-    def addAction(content, token, type, roles=[], oneTime=True, **kwargs):
+    def addAction(content, token, type, roles=[], oneTime=True, unrestricted=False, username=None, **kwargs):
         """
         Add another action to an existing Power Token enabled content
         
@@ -70,6 +70,8 @@ class IPowerActionConfiguration(Interface):
     roles = Attribute("Run this action with those roles")
     oneTime = Attribute("True if the action can be executed one time, then is consumed. "
                         "False for action that not really consume the token")
+    unrestricted = Attribute("For use UnrestrictedUser or not")
+    username = Attribute("A custom userid to use for the temp user")
     params = Attribute("Additional parameters, used for performing the action")
 
 
