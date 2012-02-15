@@ -101,20 +101,23 @@ class TestToken(TestCase):
     def test_consumeActions(self):
         token = self.utility.enablePowerToken(self.doc, 'foo')
         self.assertEqual(self.utility.consumeActions(self.doc, token),
-                         [('http://nohost/plone/testdoc', 'foo', {})])
+                         [('http://nohost/plone/testdoc', 'foo', {}, {})])
         self.assertRaises(PowerTokenConfigurationError, self.utility.consumeActions, self.doc, token)
         token = self.utility.enablePowerToken(self.doc, 'foo', aaa=5)
         self.assertEqual(self.utility.consumeActions(self.doc, token),
-                         [('http://nohost/plone/testdoc', 'foo', {'aaa': 5})])
+                         [('http://nohost/plone/testdoc', 'foo', {'aaa': 5}, {})])
         token = self.utility.enablePowerToken(self.doc, 'fake', aaa=5)
         self.assertRaises(ComponentLookupError, self.utility.consumeActions, self.doc, token)
+        token = self.utility.enablePowerToken(self.doc, 'foo', aaa=7)
+        self.assertEqual(self.utility.consumeActions(self.doc, token, bbb=2),
+                         [('http://nohost/plone/testdoc', 'foo', {'aaa': 7}, {'bbb': 2})])
 
     def test_consumeActionsWithMultipleActions(self):
         token = self.utility.enablePowerToken(self.doc, 'foo', abc='text')
         self.utility.addAction(self.doc, token, 'foo')
         self.assertEqual(self.utility.consumeActions(self.doc, token),
-                         [('http://nohost/plone/testdoc', 'foo', {'abc': 'text'}),
-                          ('http://nohost/plone/testdoc', 'foo', {}),])
+                         [('http://nohost/plone/testdoc', 'foo', {'abc': 'text'}, {}),
+                          ('http://nohost/plone/testdoc', 'foo', {}, {}),])
         self.assertRaises(PowerTokenConfigurationError, self.utility.consumeActions, self.doc, token)
 
     def test_unrestrictedUser(self):

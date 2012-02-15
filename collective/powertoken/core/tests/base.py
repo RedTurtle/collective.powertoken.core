@@ -66,8 +66,8 @@ class TestPowerActionProvider(object):
         self.context = context
         self.request = request
     
-    def doAction(self, action):
-        return self.context.absolute_url(), action.type, action.params
+    def doAction(self, action, **kwargs):
+        return self.context.absolute_url(), action.type, action.params, kwargs
 
 
 class AdvancedTestPowerActionProvider(object):
@@ -76,8 +76,8 @@ class AdvancedTestPowerActionProvider(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
-    
-    def doAction(self, action):
+
+    def doAction(self, action, **kwargs):
         member = self.context.portal_membership.getAuthenticatedMember()
         return (member.has_role('Abc', self.context), member.getId())
 

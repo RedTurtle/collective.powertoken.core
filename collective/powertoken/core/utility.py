@@ -114,7 +114,7 @@ class PowerTokenUtility(object):
         if len(powertokens)==0:
             self.disablePowerTokens(content)
 
-    def consumeActions(self, content, token):
+    def consumeActions(self, content, token, **kwargs):
         self.verifyToken(content, token)
         actions = self.consumeToken(content, token)
         results = []
@@ -137,7 +137,7 @@ class PowerTokenUtility(object):
                     tmp_user = Cls(action.username or old_sm.getUser().getId() or '', '', action.roles, '')
                     tmp_user = tmp_user.__of__(acl_users)
                     newSecurityManager(None, tmp_user)
-                results.append(adapter.doAction(action))
+                results.append(adapter.doAction(action, **kwargs))
             finally:
                 if action.roles:
                     setSecurityManager(old_sm)

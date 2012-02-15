@@ -45,7 +45,7 @@ class TestTokenView(TestCase):
         self.request.form['token'] = token
         self.request.form['path'] = 'testdoc'
         view = getMultiAdapter((self.portal, self.request), name='consume-powertoken')
-        self.assertEqual(view(),  [('http://nohost/plone/testdoc', 'foo', {})])
+        self.assertEqual(view(),  [('http://nohost/plone/testdoc', 'foo', {}, {})])
 
     def test_getTarget(self):
         view = getMultiAdapter((self.portal, self.request), name='consume-powertoken')
@@ -73,7 +73,7 @@ class TestFirstTokenView(TestCase):
         self.request.form['token'] = token
         self.request.form['path'] = 'testdoc'
         view = getMultiAdapter((self.portal, self.request), name='consume-powertoken-first')
-        self.assertEqual(view(),  ('http://nohost/plone/testdoc', 'foo', {}))
+        self.assertEqual(view(),  ('http://nohost/plone/testdoc', 'foo', {}, {}))
 
 
 def test_suite():

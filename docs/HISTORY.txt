@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.0 (2012-02-15)
+------------------
+
+* now you can add *runtime parameters* when consuming actions [keul]
+* updated documentation and fixed from errors [keul]
+
 0.2.0 (2012-01-15)
 ------------------
 

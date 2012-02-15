@@ -45,9 +45,10 @@ class IPowerTokenUtility(Interface):
         Return the action deleted
         """
     
-    def consumeActions(content, token):
+    def consumeActions(content, token, **kwargs):
         """
-        Execute what to do on the content for a given token
+        Execute what to do on the content for a given token, providing to all actions
+        optional additional parameters
         
         Returns the list of results of all actions in order (if any)
         """
@@ -56,8 +57,8 @@ class IPowerTokenUtility(Interface):
 class IPowerActionProvider(Interface):
     """Marker interface for an object able to perform action on a content"""
     
-    def doAction(action):
-        """Execute the action.
+    def doAction(action, **kwargs):
+        """Execute the action with optional additional parameters
         
         Action is an object providing IPowerActionConfiguration interface
         """

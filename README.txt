@@ -26,11 +26,16 @@ application that send the token by e-mail)
 
 You can then execute the given action using the same utility:
 
->>> result = utility.consumeAction(document, token)
+>>> result = utility.consumeActions(document, token)
 
 Or calling the provided view that need ``token`` and ``path`` parameters, for example:
 
     http://myplonesite/@@consume-powertoken?token=aaaa-bbbb-cccc&path=path/to/the/content
+
+The ``consumeActions`` can also be called with additional *runtime arguments* that can be used later
+when the action is executed:
+
+>>> result = utility.consumeActions(document, token, runtime_parameter1='foo', runtime_parameter2=5.4)
 
 Registering more that one action
 --------------------------------
@@ -43,7 +48,7 @@ You can also register (and then run all of theme) more that one action for a tok
 
 When you consume the token, all registered actions are executed in order.
 
->>> result = utility.consumeAction(document, token)
+>>> result = utility.consumeActions(document, token)
 
 What action is executed?
 ------------------------
@@ -56,16 +61,16 @@ When you call:
 >>> token = utility.enablePowerToken(document, 'myMagicAction', parameter1='foo', parameter2=5)
 
 ... you are preparing the call for an adapter called *myMagicAction*, saving also additional
-parameter provided (in a special ``action`` object, see below). Know that 3rd party adapter can require
-specific parameters to works.
+*configuration parameters* provided (in a special ``action`` object, see below).
+Know that 3rd party adapter can require specific configuration parameters to works properly.
 
-When ``consumeAction`` is called, internally a new adapter is called:
+When ``consumeActions`` is called, internally a new adapter is searched:
 
 >>> from collective.powertoken.core.interfaces import IPowerActionProvider
 >>> adapter = getMultiAdapter((document, request),
 ...                           IPowerActionProvider,
 ...                           name='myMagicAction')
->>> result = adapter.doAction(action)
+>>> result = adapter.doAction(action, runtime_parameter1='foo', runtime_parameter2=5.4)
 
 What to do with results (you can also don't provide results) is under your control. Result is always a
 Python list with all results from all executed actions. 
@@ -82,11 +87,11 @@ When calling ``enablePowerToken`` and you give additional parameters, they are s
 object:
 
 ``roles``
-    Default to empty list. Commonly when you call ``consumeAction`` you are performing an action keeping user's
+    Default to empty list. Commonly when you call ``consumeActions`` you are performing an action keeping user's
     privileges. Providing there a list of Zope roles will give you *those* roles instead. In this way,
     knowing a token, you can commonly perform unauthorized actions.
 ``oneTime``
-    Default to True. When you call ``consumeAction``  you commonly execute the action and remove the action
+    Default to True. When you call ``consumeActions``  you commonly execute the action and remove the action
     from the action list.
     Instead you can configure an action that never expire the token when executed, so you can call it many
     times as you want (using the same token every time).

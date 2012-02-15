@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os, sys
 
-version = '0.2.0'
+version = '0.3.0'
 
 tests_require = ['zope.testing', 'Products.PloneTestCase']
 
@@ -12,8 +12,8 @@ if sys.version_info < (2, 6):
 
 setup(name='collective.powertoken.core',
       version=version,
-      description="A mechanism for bypass Plone security, accessing specific "
-                  "URLs while giving a secret token (core package)",
+      description="A mechanism for bypass Plone security, performing "
+                  "operations normally unauthorized, if a secret token is know (core package)",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from
@@ -25,7 +25,7 @@ setup(name='collective.powertoken.core',
         "Framework :: Plone :: 4.1",
         "Framework :: Zope2",
         "Framework :: Zope3",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         ],
