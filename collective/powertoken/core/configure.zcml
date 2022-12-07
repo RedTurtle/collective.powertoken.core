@@ -6,7 +6,7 @@
     <include package=".browser" />
 
     <utility
-          provides=".interfaces.IPowerTokenUtility"
-          factory=".utility.PowerTokenUtility" />
+      provides=".interfaces.IPowerTokenUtility"
+      factory=".utility.PowerTokenUtility" />
 
 </configure>

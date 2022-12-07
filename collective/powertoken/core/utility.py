@@ -5,7 +5,7 @@ import uuid
 from persistent.list import PersistentList
 from persistent.dict import PersistentDict
 
-from zope.interface import implements, alsoProvides, noLongerProvides
+from zope.interface import implementer, alsoProvides, noLongerProvides
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
 from zope.component.interfaces import ComponentLookupError
@@ -29,19 +29,18 @@ class UnrestrictedUser(UnrestrictedUser):
         return self.getUserName()
 
 
+@implementer(IPowerTokenUtility)
 class PowerTokenUtility(object):
     """ Utility for manage power tokens on contents
     """
 
-    implements(IPowerTokenUtility)
-    
     def _generateNewToken(self):
         return str(uuid.uuid4())
 
     def enablePowerToken(self, content, type, roles=[], oneTime=True, unrestricted=False,
                          username=None, **kwargs):
         annotations = IAnnotations(content)
-        
+
         if not annotations.get(config.MAIN_TOKEN_NAME):
             annotations[config.MAIN_TOKEN_NAME] = PersistentDict()
             alsoProvides(content, IPowerTokenizedContent)
@@ -53,7 +52,7 @@ class PowerTokenUtility(object):
         if powertokens.get(token) is not None:
             raise KeyError('Token %s already stored in object %s' % (token,
                                                                      '/'.join(content.getPhysicalPath())))
-        
+
         powertokens[token] = PersistentList()
         self.addAction(content, token, type, roles=roles, oneTime=oneTime, unrestricted=unrestricted,
                        username=username, **kwargs)
@@ -121,7 +120,7 @@ class PowerTokenUtility(object):
 
         for action in actions:
             action_type = action.type
-            
+
             try:
                 adapter = getMultiAdapter((content, content.REQUEST), IPowerActionProvider, name=action_type)
             except ComponentLookupError:
@@ -133,7 +132,7 @@ class PowerTokenUtility(object):
                     old_sm = getSecurityManager()
                     Cls = SimpleUser
                     if action.unrestricted:
-                        Cls = UnrestrictedUser                        
+                        Cls = UnrestrictedUser
                     tmp_user = Cls(action.username or old_sm.getUser().getId() or '', '', action.roles, '')
                     tmp_user = tmp_user.__of__(acl_users)
                     newSecurityManager(None, tmp_user)

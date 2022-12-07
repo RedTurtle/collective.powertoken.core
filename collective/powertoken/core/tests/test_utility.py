@@ -5,28 +5,35 @@ from AccessControl import Unauthorized
 from zope.component import getUtility, ComponentLookupError
 from zope.annotation.interfaces import IAnnotations
 
+from plone.app.testing import setRoles, TEST_USER_ID
+from plone.app.testing import logout
+
 from collective.powertoken.core import config
 from collective.powertoken.core.exceptions import PowerTokenSecurityError, PowerTokenConfigurationError
 from collective.powertoken.core.interfaces import IPowerTokenUtility, IPowerTokenizedContent 
+
 from collective.powertoken.core.tests.base import TestCase
+
 
 class TestToken(TestCase):
 
-    def afterSetUp(self):
-        self.setRoles(('Manager', ))
-        portal = self.portal
-        portal.invokeFactory(type_name="Document", id="testdoc")
-        doc = portal.testdoc
+    def setUp(self):
+        """ """
+        self.portal = self.layer['portal']
+        setRoles(self.portal, TEST_USER_ID, ['Manager'])
+
+        self.portal.invokeFactory(type_name="Document", id="testdoc")
+        doc = self.portal.testdoc
         doc.edit(title="A test document")
         self.utility = getUtility(IPowerTokenUtility)
-        self.doc = portal.testdoc
+        self.doc = self.portal.testdoc
         self.request = self.portal.REQUEST
 
     def test_enablePowerToken(self):
         token = self.utility.enablePowerToken(self.doc, 'foo')
         configuration = IAnnotations(self.doc)[config.MAIN_TOKEN_NAME]
         self.assertTrue(IPowerTokenizedContent.providedBy(self.doc))
-        self.assertEquals(configuration.keys()[0], token)
+        self.assertTrue(token in configuration.keys())
 
     def test_addAction(self):
         self.assertRaises(PowerTokenConfigurationError, self.utility.addAction, self.doc, 'fooToken', 'fooAction')
@@ -124,8 +131,7 @@ class TestToken(TestCase):
         token = self.utility.enablePowerToken(self.doc, 'viewfoo') 
         has_role, username = self.utility.consumeActions(self.doc, token)[0]
         self.assertEqual(has_role, 0)
-        self.logout()
-        self.setRoles(('Anonymous', ))
+        logout()
         token = self.utility.enablePowerToken(self.doc, 'viewfoo', unrestricted=True)
         has_role, username = self.utility.consumeActions(self.doc, token)[0]
         self.assertEqual(has_role, 1)
@@ -137,8 +143,7 @@ class TestToken(TestCase):
         token = self.utility.enablePowerToken(self.doc, 'viewfoo', roles='Member', username='Unknow') 
         has_role, username = self.utility.consumeActions(self.doc, token)[0]
         self.assertEqual(username, 'Unknow')
-        self.logout()
-        self.setRoles(('Anonymous', ))
+        logout()
         token = self.utility.enablePowerToken(self.doc, 'viewfoo', roles='Member') 
         has_role, username = self.utility.consumeActions(self.doc, token)[0]
         self.assertEqual(username, '')

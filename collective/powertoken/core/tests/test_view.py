@@ -2,23 +2,27 @@
 
 from zope.component import getUtility, getMultiAdapter
 
+from plone.app.testing import setRoles, TEST_USER_ID
+from plone.app.testing import logout
+
 from collective.powertoken.core.tests.base import TestCase
 from collective.powertoken.core.interfaces import IPowerTokenUtility
 from collective.powertoken.core.exceptions import PowerTokenConfigurationError
 
 class TestTokenView(TestCase):
 
-    def afterSetUp(self):
-        self.setRoles(('Manager', ))
-        portal = self.portal
-        portal.invokeFactory(type_name="Document", id="testdoc")
-        doc = portal.testdoc
+    def setUp(self):
+        """ """
+        self.portal = self.layer['portal']
+        setRoles(self.portal, TEST_USER_ID, ['Manager'])      
+
+        self.portal.invokeFactory(type_name="Document", id="testdoc")
+        doc = self.portal.testdoc
         doc.edit(title="A test document")
         self.utility = getUtility(IPowerTokenUtility)
-        self.doc = portal.testdoc
+        self.doc = self.portal.testdoc
         self.request = self.portal.REQUEST
-        self.logout()
-        self.setRoles(('Anonymous', ))
+        logout()
 
     def test_givenParameters(self):
         from zExceptions import BadRequest
@@ -56,17 +60,18 @@ class TestTokenView(TestCase):
 
 class TestFirstTokenView(TestCase):
 
-    def afterSetUp(self):
-        self.setRoles(('Manager', ))
-        portal = self.portal
-        portal.invokeFactory(type_name="Document", id="testdoc")
-        doc = portal.testdoc
+    def setUp(self):
+        """ """
+        self.portal = self.layer['portal']
+        setRoles(self.portal, TEST_USER_ID, ['Manager'])      
+
+        self.portal.invokeFactory(type_name="Document", id="testdoc")
+        doc = self.portal.testdoc
         doc.edit(title="A test document")
         self.utility = getUtility(IPowerTokenUtility)
-        self.doc = portal.testdoc
+        self.doc = self.portal.testdoc
         self.request = self.portal.REQUEST
-        self.logout()
-        self.setRoles(('Anonymous', ))
+        logout()
 
     def test_firstPowerActionCall(self):
         token = self.utility.enablePowerToken(self.doc, 'foo')

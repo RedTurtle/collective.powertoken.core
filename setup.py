@@ -3,9 +3,9 @@ import os, sys
 
 version = '0.3.0'
 
-tests_require = ['zope.testing', 'Products.PloneTestCase']
-
 install_requires=['setuptools',]
+tests_require = ['interlude', 'plone.app.testing', 'plone.app.robotframework']
+#install_requires.extends(tests_require)
 
 if sys.version_info < (2, 6):
     install_requires.append('uuid')
@@ -20,14 +20,12 @@ setup(name='collective.powertoken.core',
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
         "Framework :: Plone",
-        "Framework :: Plone :: 3.3",
-        "Framework :: Plone :: 4.0",
-        "Framework :: Plone :: 4.1",
-        "Framework :: Zope2",
+        "Framework :: Plone :: 5.2",
         "Framework :: Zope3",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Programming Language :: Python",
+        "Programming Language :: Python 3.8",        
         ],
       keywords='plone security token plonegov',
       author='RedTurtle Technology',
